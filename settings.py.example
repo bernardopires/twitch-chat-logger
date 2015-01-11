@@ -1,0 +1,15 @@
+IRC = {
+    'SERVER': 'irc.twitch.tv',
+    'NICK': 'twitch_username',
+    'PASSWORD': 'your_oauth_password',  # tip: http://twitchapps.com/tmi/
+    'PORT': 6667,
+}
+
+# Do not change if using docker!
+DATABASE = {
+    'NAME': 'postgres',
+    'USER': 'postgres',
+    'PASSWORD': 'root',
+    'HOST': 'db',
+}
+

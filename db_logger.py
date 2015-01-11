@@ -12,6 +12,13 @@ class DatabaseLogger:
         self.cursor = self.conn.cursor()
 
     def log(self, sender, message, channel):
-        self.cursor.execute("INSERT INTO chat_log (sender, message, channel, date) VALUES (%s, %s, %s, %s)",
-                            (sender, message, channel, current_time_in_milli()))
+        if len(message) > 512:
+            message = message[:512]
+
+        try:
+            self.cursor.execute("INSERT INTO chat_log (sender, message, channel, date) VALUES (%s, %s, %s, %s)",
+                                (sender, message, channel, current_time_in_milli()))
+        except psycopg2.DataError as e:
+            print e
+            print message
 

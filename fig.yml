@@ -1,0 +1,11 @@
+bot:
+    build: .
+    command: python main.py
+    links:
+        - db
+db:
+    build: dockerfiles/db
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=root
+
