@@ -26,7 +26,18 @@ def main():
     bot.start()
     while True:
         try:
-            time.sleep(1)
+            time.sleep(60)
+            new_channels = get_top_channels(20)
+            channels_to_remove = list(set(channels) - set(new_channels))
+            channels_to_add = list(set(new_channels) - set(channels))
+
+            if channels_to_remove:
+                command_queue.put(('part', channels_to_remove))
+
+            if channels_to_add:
+                command_queue.put(('join', channels_to_add))
+
+            channels = new_channels
         except KeyboardInterrupt:
             print 'Exiting gracefully...'
             bot.join()

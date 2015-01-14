@@ -13,6 +13,7 @@ class TwitchBot(IRCBot, threading.Thread):
         self.chat_logger = chat_logger
         self.command_queue = command_queue
         self.disconnect = threading.Event()
+        self.logger = self.conn.logger
 
     def run(self):
         patterns = self.conn.dispatch_patterns()
@@ -20,7 +21,7 @@ class TwitchBot(IRCBot, threading.Thread):
         while not self.disconnect.is_set():
             data = self.conn.get_data()
             if not data:
-                print 'disconnected'
+                self.logger.info('Disconnected from server')
                 self.conn.close()
                 self.connect_and_join_channels(self.channels)
                 continue
@@ -28,7 +29,7 @@ class TwitchBot(IRCBot, threading.Thread):
             self.conn.dispatch_data(data, patterns)
 
             try:
-                command = self.command_queue.get(False)
+                command = self.command_queue.get_nowait()
                 self.process_command(command)
             except Queue.Empty:
                 continue
@@ -40,19 +41,31 @@ class TwitchBot(IRCBot, threading.Thread):
 
     def connect_and_join_channels(self, channels):
         if not self.conn.connect():
-            pass  # throw exception
+            raise RuntimeError("Failed to connect to IRC channel.")
 
         for channel in channels:
             self.conn.join(channel)
         self.channels = channels
 
-    def process_command(command):
-        pass
+    def process_command(self, command):
+        """ command is expected to be a tuple of a string and a list """
+        if not (type(command) is tuple and len(command) == 2):
+            raise ValueError("Expected command to be a tuple of a string and a list")
+
+        action, channels = command
+        self.logger.info("Received command %s (%s)" % (action, ','.join(channels)))
+        if action == 'join':
+            for channel in channels:
+                self.conn.join(channel)
+            self.channels += channels
+        elif action == 'part':
+            for channel in channels:
+                self.conn.part(channel)
+            self.channels = [c for c in self.channels if c not in channels]
 
     def log(self, sender, message, channel):
         if sender == settings.IRC['NICK']:
-            print "%s, %s: %s " % (channel, sender, message)
-            return
+            self.logger.info("%s, %s: %s " % (channel, sender, message))
 
         self.chat_logger.log(sender, message, channel)
 
