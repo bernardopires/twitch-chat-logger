@@ -7,6 +7,7 @@ from bot import TwitchBot
 from utils import get_top_channels
 from db_logger import DatabaseLogger
 
+
 def main():
     conn = IRCConnection(settings.IRC['SERVER'],
                          settings.IRC['PORT'],

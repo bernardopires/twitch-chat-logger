@@ -60,4 +60,3 @@ class TwitchBot(IRCBot, threading.Thread):
         return (
             ('.*', self.log),
         )
-

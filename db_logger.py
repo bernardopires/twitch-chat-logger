@@ -2,6 +2,7 @@ import psycopg2
 
 from utils import current_time_in_milli
 
+
 class DatabaseLogger:
     conn = None
     cursor = None
@@ -21,4 +22,3 @@ class DatabaseLogger:
         except psycopg2.DataError as e:
             print e
             print message
-
