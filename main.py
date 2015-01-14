@@ -1,4 +1,6 @@
+import Queue
 import settings
+import time
 
 from irc import run_bot, IRCConnection
 from bot import TwitchBot
@@ -14,17 +16,20 @@ def main():
                             settings.DATABASE['NAME'],
                             settings.DATABASE['USER'],
                             settings.DATABASE['PASSWORD'])
-    bot = TwitchBot(conn, logger)
+    command_queue = Queue.Queue()
+    bot = TwitchBot(conn, logger, command_queue)
+    bot.daemon = True
 
-    channels = get_top_channels(25)
+    channels = get_top_channels(20)
+    bot.connect_and_join_channels(channels)
+    bot.start()
     while True:
-        if not conn.connect():
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            print 'Exiting gracefully...'
+            bot.join()
             break
-
-        for channel in channels:
-            conn.join(channel)
-
-        conn.enter_event_loop()
 
 if __name__ == "__main__":
     main()
