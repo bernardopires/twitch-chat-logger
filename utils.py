@@ -3,9 +3,13 @@ import requests
 import time
 
 
-def get_top_channels(n):
+def get_top_streams(n):
     twitch_api_url = 'https://api.twitch.tv/kraken/streams/?limit=%i' % n
     streams = json.loads(requests.get(twitch_api_url).text)['streams']
+    return streams
+
+
+def get_channel_names(streams):
     return [stream['channel']['name'] for stream in streams]
 
 

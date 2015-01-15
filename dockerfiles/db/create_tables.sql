@@ -20,10 +20,10 @@ SET default_with_oids = false;
 
 CREATE TABLE chat_log (
     id integer NOT NULL,
-    channel character varying(64),
-    sender character varying(64),
-    message character varying(512),
-    date bigint
+    channel character varying(64) NOT NULL,
+    sender character varying(64) NOT NULL,
+    message character varying(512) NOT NULL,
+    date bigint NOT NULL
 );
 
 
@@ -51,10 +51,72 @@ ALTER SEQUENCE chat_log_id_seq OWNED BY chat_log.id;
 
 
 --
+-- Name: stream_log; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE stream_log (
+    id integer NOT NULL,
+    channel character varying(64) NOT NULL,
+    title character varying(128),
+    game character varying(64),
+    viewers integer NOT NULL,
+    date bigint NOT NULL
+);
+
+
+ALTER TABLE public.stream_log OWNER TO postgres;
+
+--
+-- Name: stream_log_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE stream_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stream_log_id_seq OWNER TO postgres;
+
+--
+-- Name: stream_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE stream_log_id_seq OWNED BY stream_log.id;
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY chat_log ALTER COLUMN id SET DEFAULT nextval('chat_log_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY stream_log ALTER COLUMN id SET DEFAULT nextval('stream_log_id_seq'::regclass);
+
+
+--
+-- Name: chat_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY chat_log
+    ADD CONSTRAINT chat_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --

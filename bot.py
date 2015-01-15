@@ -67,7 +67,7 @@ class TwitchBot(IRCBot, threading.Thread):
         if sender == settings.IRC['NICK']:
             self.logger.info("%s, %s: %s " % (channel, sender, message))
 
-        self.chat_logger.log(sender, message, channel)
+        self.chat_logger.log_chat(sender, message, channel)
 
     def command_patterns(self):
         return (
