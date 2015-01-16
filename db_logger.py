@@ -26,13 +26,15 @@ class DatabaseLogger:
     def log_stream_stats(self, stream):
         if 'status' not in stream['channel']:
             stream['channel']['status'] = None
+        elif len(stream['channel']['status']) > 128:
+            stream['channel']['status'] = stream['channel']['status'][:128]
         if 'game' not in stream['channel']:
             stream['channel']['game'] = None
 
         self.cursor.execute("INSERT INTO stream_log (channel, title, game, viewers, date) "
                             "VALUES (%s, %s, %s, %s, %s)",
                             (stream['channel']['name'],
-                                stream['channel']['status'],
-                                stream['channel']['game'],
-                                int(stream['viewers']),
-                                current_time_in_milli()))
+                             stream['channel']['status'],
+                             stream['channel']['game'],
+                             int(stream['viewers']),
+                             current_time_in_milli()))
