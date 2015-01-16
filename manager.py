@@ -21,9 +21,9 @@ class TwitchManager:
                              settings.IRC['NICK'],
                              settings.IRC['PASSWORD'])
         bot_db_logger = DatabaseLogger(settings.DATABASE['HOST'],
-                                settings.DATABASE['NAME'],
-                                settings.DATABASE['USER'],
-                                settings.DATABASE['PASSWORD'])
+                                       settings.DATABASE['NAME'],
+                                       settings.DATABASE['USER'],
+                                       settings.DATABASE['PASSWORD'])
         self.command_queue = Queue.Queue()
         streams = get_top_streams(self.streams_to_log)
         self.channels = get_channel_names(streams)
