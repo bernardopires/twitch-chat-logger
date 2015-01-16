@@ -10,7 +10,6 @@ from db_logger import DatabaseLogger
 class TwitchManager:
     def __init__(self, streams_to_log):
         self.streams_to_log = streams_to_log
-        self.command_queue = Queue.Queue()
         self.db_logger = DatabaseLogger(settings.DATABASE['HOST'],
                                         settings.DATABASE['NAME'],
                                         settings.DATABASE['USER'],
@@ -27,10 +26,10 @@ class TwitchManager:
                                 settings.DATABASE['PASSWORD'])
         self.command_queue = Queue.Queue()
         streams = get_top_streams(self.streams_to_log)
-        channels = get_channel_names(streams)
+        self.channels = get_channel_names(streams)
         self.bot = TwitchBot(conn, bot_db_logger, self.command_queue)
         self.bot.daemon = True
-        self.bot.connect_and_join_channels(channels)
+        self.bot.connect_and_join_channels(self.channels)
         self.bot.start()
         self._log_streams(streams)
 
@@ -40,7 +39,7 @@ class TwitchManager:
 
     def run_log_loop(self):
         self._initialize_bot()
-        channels = []
+        channels = self.channels
         while True:
             time.sleep(60)
             streams = get_top_streams(self.streams_to_log)
