@@ -10,24 +10,37 @@ from db_logger import DatabaseLogger
 class TwitchManager:
     def __init__(self, streams_to_log):
         self.streams_to_log = streams_to_log
+        self.command_queue = Queue.Queue()
+        self.db_logger = DatabaseLogger(settings.DATABASE['HOST'],
+                                        settings.DATABASE['NAME'],
+                                        settings.DATABASE['USER'],
+                                        settings.DATABASE['PASSWORD'])
 
-    def run_log_loop(self):
+    def _initialize_bot(self):
         conn = IRCConnection(settings.IRC['SERVER'],
-                            settings.IRC['PORT'],
-                            settings.IRC['NICK'],
-                            settings.IRC['PASSWORD'])
-        logger = DatabaseLogger(settings.DATABASE['HOST'],
+                             settings.IRC['PORT'],
+                             settings.IRC['NICK'],
+                             settings.IRC['PASSWORD'])
+        bot_db_logger = DatabaseLogger(settings.DATABASE['HOST'],
                                 settings.DATABASE['NAME'],
                                 settings.DATABASE['USER'],
                                 settings.DATABASE['PASSWORD'])
-        command_queue = Queue.Queue()
-        self.bot = TwitchBot(conn, logger, command_queue)
+        self.command_queue = Queue.Queue()
+        streams = get_top_streams(self.streams_to_log)
+        channels = get_channel_names(streams)
+        self.bot = TwitchBot(conn, bot_db_logger, self.command_queue)
         self.bot.daemon = True
-
-        channels = get_channel_names(get_top_streams(self.streams_to_log))
         self.bot.connect_and_join_channels(channels)
         self.bot.start()
+        self._log_streams(streams)
 
+    def _log_streams(self, streams):
+        for stream in streams:
+            self.db_logger.log_stream_stats(stream)
+
+    def run_log_loop(self):
+        self._initialize_bot()
+        channels = []
         while True:
             time.sleep(60)
             streams = get_top_streams(self.streams_to_log)
@@ -36,15 +49,12 @@ class TwitchManager:
             channels_to_add = list(set(new_channels) - set(channels))
 
             if channels_to_remove:
-                command_queue.put(('part', channels_to_remove))
+                self.command_queue.put(('part', channels_to_remove))
 
             if channels_to_add:
-                command_queue.put(('join', channels_to_add))
+                self.command_queue.put(('join', channels_to_add))
 
-            # log stream stats
-            for stream in streams:
-                logger.log_stream_stats(stream)
-
+            self._log_streams(streams)
             channels = new_channels
 
     def stop_bot(self):
