@@ -2,18 +2,24 @@ import settings
 import threading
 import Queue
 import socket
+import logging
 
 from irc import IRCBot, run_bot
 
 
 class TwitchBot(IRCBot, threading.Thread):
-    def __init__(self, conn, chat_logger, command_queue, *args, **kwargs):
+    def __init__(self, name, conn, chat_logger, command_queue, *args, **kwargs):
         super(TwitchBot, self).__init__(conn, *args, **kwargs)
 
+        self.name = name
         self.chat_logger = chat_logger
         self.command_queue = command_queue
         self.disconnect = threading.Event()
-        self.logger = self.conn.logger
+        self.logger = logging.getLogger(name)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - ' + name + ' - %(message)s'))
+        self.logger.addHandler(stream_handler)
+        self.logger.setLevel(logging.INFO)
 
     def run(self):
         patterns = self.conn.dispatch_patterns()
@@ -36,6 +42,7 @@ class TwitchBot(IRCBot, threading.Thread):
 
     def join(self, timeout=None):
         self.conn.close()
+        self.logger.info('Closed connection.')
         self.disconnect.set()
         super(TwitchBot, self).join(timeout)
 

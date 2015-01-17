@@ -18,7 +18,7 @@ class TwitchManager:
                                         settings.DATABASE['USER'],
                                         settings.DATABASE['PASSWORD'])
 
-    def _create_bot(self, channels):
+    def _create_bot(self, name, channels):
         conn = IRCConnection(settings.IRC['SERVER'],
                              settings.IRC['PORT'],
                              settings.IRC['NICK'],
@@ -27,7 +27,7 @@ class TwitchManager:
                                        settings.DATABASE['NAME'],
                                        settings.DATABASE['USER'],
                                        settings.DATABASE['PASSWORD'])
-        bot = TwitchBot(conn, bot_db_logger, Queue.Queue())
+        bot = TwitchBot(name, conn, bot_db_logger, Queue.Queue())
         bot.daemon = True
         bot.connect_and_join_channels(channels)
         bot.start()
@@ -40,7 +40,9 @@ class TwitchManager:
         channels_joined = 0
         while channels_joined < self.streams_to_log:
             # create a new bot
-            self.bots.append(self._create_bot(channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT]))
+            self.bots.append(
+                self._create_bot('Bot %i' % len(self.bots),
+                                     channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT]))
             channels_joined += self.CHANNELS_PER_BOT
             time.sleep(15)
 
