@@ -7,6 +7,7 @@ from bot import TwitchBot
 from utils import get_top_streams, get_channel_names
 from db_logger import DatabaseLogger
 
+
 class TwitchManager:
     CHANNELS_PER_BOT = 20
 
@@ -42,7 +43,7 @@ class TwitchManager:
             # create a new bot
             self.bots.append(
                 self._create_bot('Bot %i' % len(self.bots),
-                                     channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT]))
+                                 channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT]))
             channels_joined += self.CHANNELS_PER_BOT
             time.sleep(15)
 
