@@ -73,9 +73,9 @@ class TwitchManager:
 
             i, channels_joined = 0, 0
             while channels_joined < self.streams_to_log:
-                # create a new bot
                 self._update_bot_channels(self.bots[i],
                                           channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT])
+                i += 1
                 channels_joined += self.CHANNELS_PER_BOT
 
             self._log_streams(streams)
