@@ -10,8 +10,7 @@ from manager import TwitchManager
 
 
 def main():
-    STREAMS_TO_FETCH = 20
-    manager = TwitchManager(streams_to_log=20)
+    manager = TwitchManager(streams_to_log=100)
     try:
         manager.run_log_loop()
     except KeyboardInterrupt:

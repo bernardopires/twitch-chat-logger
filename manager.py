@@ -8,14 +8,17 @@ from utils import get_top_streams, get_channel_names
 from db_logger import DatabaseLogger
 
 class TwitchManager:
+    CHANNELS_PER_BOT = 20
+
     def __init__(self, streams_to_log):
+        self.bots = []
         self.streams_to_log = streams_to_log
         self.db_logger = DatabaseLogger(settings.DATABASE['HOST'],
                                         settings.DATABASE['NAME'],
                                         settings.DATABASE['USER'],
                                         settings.DATABASE['PASSWORD'])
 
-    def _initialize_bot(self):
+    def _create_bot(self, channels):
         conn = IRCConnection(settings.IRC['SERVER'],
                              settings.IRC['PORT'],
                              settings.IRC['NICK'],
@@ -24,37 +27,56 @@ class TwitchManager:
                                        settings.DATABASE['NAME'],
                                        settings.DATABASE['USER'],
                                        settings.DATABASE['PASSWORD'])
-        self.command_queue = Queue.Queue()
+        bot = TwitchBot(conn, bot_db_logger, Queue.Queue())
+        bot.daemon = True
+        bot.connect_and_join_channels(channels)
+        bot.start()
+        return bot
+
+    def _create_bots(self):
         streams = get_top_streams(self.streams_to_log)
-        self.channels = get_channel_names(streams)
-        self.bot = TwitchBot(conn, bot_db_logger, self.command_queue)
-        self.bot.daemon = True
-        self.bot.connect_and_join_channels(self.channels)
-        self.bot.start()
+        channels = get_channel_names(streams)
+
+        channels_joined = 0
+        while channels_joined < self.streams_to_log:
+            # create a new bot
+            self.bots.append(self._create_bot(channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT]))
+            channels_joined += self.CHANNELS_PER_BOT
+            time.sleep(15)
+
         self._log_streams(streams)
+
+    def _update_bot_channels(self, bot, new_channels):
+        channels_to_remove = list(set(bot.channels) - set(new_channels))
+        channels_to_add = list(set(new_channels) - set(bot.channels))
+
+        if channels_to_remove:
+            bot.command_queue.put(('part', channels_to_remove))
+
+        if channels_to_add:
+            bot.command_queue.put(('join', channels_to_add))
 
     def _log_streams(self, streams):
         for stream in streams:
             self.db_logger.log_stream_stats(stream)
 
     def run_log_loop(self):
-        self._initialize_bot()
-        channels = self.channels
+        self._create_bots()
+
         while True:
             time.sleep(60)
             streams = get_top_streams(self.streams_to_log)
-            new_channels = get_channel_names(streams)
-            channels_to_remove = list(set(channels) - set(new_channels))
-            channels_to_add = list(set(new_channels) - set(channels))
+            channels = get_channel_names(streams)
 
-            if channels_to_remove:
-                self.command_queue.put(('part', channels_to_remove))
-
-            if channels_to_add:
-                self.command_queue.put(('join', channels_to_add))
+            i, channels_joined = 0, 0
+            while channels_joined < self.streams_to_log:
+                # create a new bot
+                self._update_bot_channels(self.bots[i],
+                                          channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT])
+                channels_joined += self.CHANNELS_PER_BOT
 
             self._log_streams(streams)
-            channels = new_channels
 
     def stop_bot(self):
-        self.bot.join()
+        for bot in self.bots:
+            bot.join()
