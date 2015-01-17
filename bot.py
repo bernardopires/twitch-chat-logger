@@ -42,6 +42,7 @@ class TwitchBot(IRCBot, threading.Thread):
 
     def join(self, timeout=None):
         self.conn.close()
+        self.chat_logger.close()
         self.logger.info('Closed connection.')
         self.disconnect.set()
         super(TwitchBot, self).join(timeout)

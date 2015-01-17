@@ -12,6 +12,10 @@ class DatabaseLogger:
         self.conn.autocommit = True
         self.cursor = self.conn.cursor()
 
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+
     def log_chat(self, sender, message, channel):
         if len(message) > 512:
             message = message[:512]
