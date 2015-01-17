@@ -10,6 +10,8 @@ from db_logger import DatabaseLogger
 
 class TwitchManager:
     CHANNELS_PER_BOT = 20
+    SECONDS_BETWEEN_UPDATE_STREAMS = 60
+    SECONDS_BETWEEN_CREATE_BOTS = 15
 
     def __init__(self, streams_to_log):
         self.bots = []
@@ -45,7 +47,7 @@ class TwitchManager:
                 self._create_bot('Bot %i' % len(self.bots),
                                  channels[channels_joined:channels_joined + self.CHANNELS_PER_BOT]))
             channels_joined += self.CHANNELS_PER_BOT
-            time.sleep(15)
+            time.sleep(self.SECONDS_BETWEEN_CREATE_BOTS)
 
         self._log_streams(streams)
 
@@ -67,7 +69,7 @@ class TwitchManager:
         self._create_bots()
 
         while True:
-            time.sleep(60)
+            time.sleep(self.SECONDS_BETWEEN_UPDATE_STREAMS)
             streams = get_top_streams(self.streams_to_log)
             channels = get_channel_names(streams)
 
