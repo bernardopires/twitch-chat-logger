@@ -4,7 +4,7 @@ import Queue
 import socket
 import logging
 
-from irc import IRCBot, run_bot
+from irc import IRCBot, run_bot, DisconnectedException
 
 
 class TwitchBot(IRCBot, threading.Thread):
@@ -37,14 +37,16 @@ class TwitchBot(IRCBot, threading.Thread):
         patterns = self.conn.dispatch_patterns()
 
         while not self.disconnect.is_set():
-            data = self.conn.get_data()
-            if not data:
-                self.logger.info('Disconnected from server')
+            try:
+                data = self.conn.get_data()  # returns empty string if times out
+            except DisconnectedException:
+                self.logger.info('Disconnected from server. Reconnecting.')
                 self.conn.close()
                 self.connect_and_join_channels(self.channels)
                 continue
 
-            self.conn.dispatch_data(data, patterns)
+            if data:
+                self.conn.dispatch_data(data, patterns)
 
             try:
                 command = self.command_queue.get_nowait()
