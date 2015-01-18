@@ -9,6 +9,10 @@ from db_logger import DatabaseLogger
 
 
 class TwitchManager:
+    """
+    Manages a series of irc chat bots that log the most popular channels on
+    Twitch.TV. The list of most popular channels is updated every 60 seconds.
+    """
     CHANNELS_PER_BOT = 20
     SECONDS_BETWEEN_UPDATE_STREAMS = 60
     SECONDS_BETWEEN_CREATE_BOTS = 15
@@ -36,12 +40,20 @@ class TwitchManager:
         bot.start()
         return bot
 
-    def _create_bots(self):
-        streams = get_top_streams(self.streams_to_log)
+    def _create_bots(self, streams_to_log):
+        """
+        Creates bots to log all the desired streams.
+
+        Twitch limits how many channels can be joined per connection, so we
+        create just enough bots to log all the desired streams. There's also
+        a timeout between opening connections otherwise Twitch disconnects
+        all bots.
+        """
+        streams = get_top_streams(streams_to_log)
         channels = get_channel_names(streams)
 
         channels_joined = 0
-        while channels_joined < self.streams_to_log:
+        while channels_joined < streams_to_log:
             # create a new bot
             self.bots.append(
                 self._create_bot('Bot %i' % len(self.bots),
@@ -66,7 +78,11 @@ class TwitchManager:
             self.db_logger.log_stream_stats(stream)
 
     def run_log_loop(self):
-        self._create_bots()
+        """
+        Creates the logger bots and update which stream they log every 60
+        seconds.
+        """
+        self._create_bots(self.streams_to_log)
 
         while True:
             time.sleep(self.SECONDS_BETWEEN_UPDATE_STREAMS)

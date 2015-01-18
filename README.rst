@@ -1,4 +1,75 @@
 twitch-chat-logger
 ==================
 
-A simple python app for logging twitch's chat to a PostgreSQL database.
+A simple python app for logging twitch's chat to a PostgreSQL database. It
+logs an arbitrary ammount of channels (default is a 100) ordered by the
+numbers of viewers. Twitch seems to not like a single bot joining a large
+amount of channels, so each bot is limitted to 20 channels. This app
+automatically scales the number of bots according to how many channels are
+to be logged (e.g. logging a 100 channels will result in 5 bots being created).
+The list of most popular channels is updated every 60 seconds and the bots
+join and leave channels as needed.
+
+Logging 100 channels for 24 hours seems to amount to ~4 million chat lines
+(~400 MB).
+
+Setup
+-----
+
+Install this repo using git.
+
+::
+
+    git clone https://github.com/bernardopires/twitch-chat-logger.git
+
+A twitch account is required to connect and log the chat channels. Update the
+``IRC`` settings dictionary inside the file ``settings.py`` with your account
+credentials. Hint: You can get your oauth password from the
+`Twitch Chat OAuth Password Generator`_.
+
+::
+
+    IRC = {
+        'SERVER': 'irc.twitch.tv',
+        'NICK': 'twitch_username',
+        'PASSWORD': 'your_oauth_password',
+        'PORT': 6667,
+    }
+
+If you're using `docker`_ and `fig`_ you're all set.
+
+::
+
+    fig up
+
+Otherwise, install the `PostgreSQL`_ database if you haven't yet and create a
+database named ``twitch``. Update the ``DATABASE`` dictionary inside
+``settings.py`` with your credentials.
+
+::
+
+    DATABASE = {
+        'NAME': 'twitch',
+        'USER': 'database_username',
+        'PASSWORD': 'database_password',
+        'HOST': 'localhost',
+    }
+
+Install the python library dependencies with pip.
+
+::
+
+    pip install -r requirements.txt
+
+Finally, you're ready!
+
+::
+
+    python main.py
+
+The command above will start 5 bots logging the 100 most popular twitch channels.
+
+.. _Twitch Chat OAuth Password Generator: http://twitchapps.com/tmi/
+.. _docker: https://www.docker.com/
+.. _fig: http://www.fig.sh/
+.. _PostgreSQL: http://www.postgresql.org/

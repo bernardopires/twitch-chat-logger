@@ -8,6 +8,12 @@ from irc import IRCBot, run_bot
 
 
 class TwitchBot(IRCBot, threading.Thread):
+    """
+    A threaded IRC bot that automatically reconnects and rejoins channels if
+    disconnected. Communication happens over the queue command_queue. The
+    accepted commands through the queue are 'join' and 'part'.
+    """
+
     def __init__(self, name, conn, chat_logger, command_queue, *args, **kwargs):
         super(TwitchBot, self).__init__(conn, *args, **kwargs)
 
@@ -15,6 +21,7 @@ class TwitchBot(IRCBot, threading.Thread):
         self.chat_logger = chat_logger
         self.command_queue = command_queue
         self.disconnect = threading.Event()
+
         self.logger = logging.getLogger(name)
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - ' + name + ' - %(message)s'))
@@ -22,6 +29,11 @@ class TwitchBot(IRCBot, threading.Thread):
         self.logger.setLevel(logging.INFO)
 
     def run(self):
+        """
+        Receives data in a loop until the event for disconnecting is set.
+        Checks the command queue for actions to be taken (joining or leaving
+        channels).
+        """
         patterns = self.conn.dispatch_patterns()
 
         while not self.disconnect.is_set():
@@ -41,6 +53,10 @@ class TwitchBot(IRCBot, threading.Thread):
                 continue
 
     def join(self, timeout=None):
+        """
+        Forces the bot to disconnect, close its socket and database
+        connection.
+        """
         self.conn.close()
         self.chat_logger.close()
         self.logger.info('Closed connection.')
@@ -56,7 +72,11 @@ class TwitchBot(IRCBot, threading.Thread):
         self.channels = channels
 
     def process_command(self, command):
-        """ command is expected to be a tuple of a string and a list """
+        """
+        Processes a command, either joining or leaving channels.
+        command is expected to be a tuple of a string and a list.
+        Valid commands are 'join' and 'part'.
+        """
         if not (type(command) is tuple and len(command) == 2):
             raise ValueError("Expected command to be a tuple of a string and a list")
 
