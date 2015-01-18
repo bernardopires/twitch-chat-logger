@@ -1,16 +1,16 @@
-import Queue
-import settings
-import time
-
-from irc import run_bot, IRCConnection
-from bot import TwitchBot
-from utils import get_top_streams, get_channel_names
-from db_logger import DatabaseLogger
+import sys
 from manager import TwitchManager
+from optparse import OptionParser
 
 
 def main():
-    manager = TwitchManager(streams_to_log=100)
+    parser = OptionParser()
+    parser.add_option("-n", "--streams-to-log", dest="streams_to_log", type="int",
+                      help="the number of streams to log", default=100)
+
+    (options, args) = parser.parse_args()
+
+    manager = TwitchManager(streams_to_log=options.streams_to_log)
     try:
         manager.run_log_loop()
     except KeyboardInterrupt:

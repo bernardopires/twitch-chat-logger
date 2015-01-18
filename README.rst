@@ -10,8 +10,8 @@ to be logged (e.g. logging a 100 channels will result in 5 bots being created).
 The list of most popular channels is updated every 60 seconds and the bots
 join and leave channels as needed.
 
-Logging 100 channels for 24 hours seems to amount to ~4 million chat lines
-(~400 MB).
+Logging 100 channels for 24 hours seems to amount to ~2 million chat lines
+(~200 MB).
 
 Setup
 -----
@@ -67,7 +67,13 @@ Finally, you're ready!
 
     python main.py
 
-The command above will start 5 bots logging the 100 most popular twitch channels.
+The command above will start 5 bots logging the 100 most popular twitch
+channels. To log a different amount use the parameter ``n``. For example,
+to log 50 channels.
+
+::
+
+    python main.py -n 50
 
 .. _Twitch Chat OAuth Password Generator: http://twitchapps.com/tmi/
 .. _docker: https://www.docker.com/
