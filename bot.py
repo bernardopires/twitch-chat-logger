@@ -14,7 +14,7 @@ class TwitchBot(IRCBot, threading.Thread):
     accepted commands through the queue are 'join' and 'part'.
     """
 
-    def __init__(self, name, conn, chat_logger, command_queue, *args, **kwargs):
+    def __init__(self, name, conn, chat_logger, command_queue, log_filename=None, *args, **kwargs):
         super(TwitchBot, self).__init__(conn, *args, **kwargs)
 
         self.name = name
@@ -22,11 +22,7 @@ class TwitchBot(IRCBot, threading.Thread):
         self.command_queue = command_queue
         self.disconnect = threading.Event()
 
-        self.logger = logging.getLogger(name)
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - ' + name + ' - %(message)s'))
-        self.logger.addHandler(stream_handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger = self.conn.get_logger(name, log_filename)
 
     def run(self):
         """

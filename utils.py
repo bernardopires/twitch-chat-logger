@@ -4,6 +4,7 @@ import time
 
 from requests.exceptions import ConnectionError, SSLError
 
+
 def get_top_streams(n):
     twitch_api_url = 'https://api.twitch.tv/kraken/streams/?limit=%i' % n
     try:

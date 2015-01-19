@@ -17,9 +17,10 @@ class TwitchManager:
     SECONDS_BETWEEN_UPDATE_STREAMS = 60
     SECONDS_BETWEEN_CREATE_BOTS = 15
 
-    def __init__(self, streams_to_log):
+    def __init__(self, streams_to_log, log_filename=None):
         self.bots = []
         self.streams_to_log = streams_to_log
+        self.log_filename = log_filename
         self.db_logger = DatabaseLogger(settings.DATABASE['HOST'],
                                         settings.DATABASE['NAME'],
                                         settings.DATABASE['USER'],
@@ -29,12 +30,13 @@ class TwitchManager:
         conn = IRCConnection(settings.IRC['SERVER'],
                              settings.IRC['PORT'],
                              settings.IRC['NICK'],
-                             settings.IRC['PASSWORD'])
+                             settings.IRC['PASSWORD'],
+                             self.log_filename)
         bot_db_logger = DatabaseLogger(settings.DATABASE['HOST'],
                                        settings.DATABASE['NAME'],
                                        settings.DATABASE['USER'],
                                        settings.DATABASE['PASSWORD'])
-        bot = TwitchBot(name, conn, bot_db_logger, Queue.Queue())
+        bot = TwitchBot(name, conn, bot_db_logger, Queue.Queue(), self.log_filename)
         bot.daemon = True
         bot.connect_and_join_channels(channels)
         bot.start()

@@ -68,12 +68,14 @@ Finally, you're ready!
     python main.py
 
 The command above will start 5 bots logging the 100 most popular twitch
-channels. To log a different amount use the parameter ``n``. For example,
-to log 50 channels.
+channels. To log a different amount use the parameter ``n`` and to save the
+output to a file use the parameter ``f``. For example, use the command below
+to log the 50 most popular channels with the output being saved to a file
+named ``log.txt``
 
 ::
 
-    python main.py -n 50
+    python main.py -n 50 -f log.txt
 
 .. _Twitch Chat OAuth Password Generator: http://twitchapps.com/tmi/
 .. _docker: https://www.docker.com/
