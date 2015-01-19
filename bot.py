@@ -92,6 +92,7 @@ class TwitchBot(IRCBot, threading.Thread):
     def log(self, sender, message, channel):
         if sender == settings.IRC['NICK']:
             self.logger.info("%s, %s: %s " % (channel, sender, message))
+            return
 
         self.chat_logger.log_chat(sender, message, channel)
 
