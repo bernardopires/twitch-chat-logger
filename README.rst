@@ -22,9 +22,10 @@ Install this repo using git.
 
     git clone https://github.com/bernardopires/twitch-chat-logger.git
 
-A twitch account is required to connect and log the chat channels. Update the
-``IRC`` settings dictionary inside the file ``settings.py`` with your account
-credentials. Hint: You can get your oauth password from the
+A twitch account is required to connect and log the chat channels. Create a
+file named ``settings.py`` (an example is provided with the name
+``settings.py.example``) and update the ``IRC`` settings dictionary with
+your account credentials. Hint: You can get your oauth password from the
 `Twitch Chat OAuth Password Generator`_.
 
 ::
@@ -55,13 +56,20 @@ database named ``twitch``. Update the ``DATABASE`` dictionary inside
         'HOST': 'localhost',
     }
 
+Create the needed tables by running ``create_tables.sql``.
+
+::
+
+    psql twitch -f create_tables.sql -U your_db_username -h localhost -W
+
 Install the python library dependencies with pip.
 
 ::
 
     pip install -r requirements.txt
 
-Finally, you're ready!
+Finally, you're ready! If you encounter any errors installing ``psycopg2``,
+you may have to execute ``apt-get install libpq-dev python-dev``.
 
 ::
 

@@ -7,7 +7,7 @@ IRC = {
 
 # Do not change if using docker!
 DATABASE = {
-    'NAME': 'postgres',
+    'NAME': 'twitch',
     'USER': 'postgres',
     'PASSWORD': 'root',
     'HOST': 'db',
