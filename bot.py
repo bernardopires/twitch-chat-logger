@@ -35,18 +35,16 @@ class TwitchBot(IRCBot, threading.Thread):
         while not self.disconnect.is_set():
             try:
                 data = self.conn.get_data()  # returns empty string if times out
+                if data:
+                    self.conn.dispatch_data(data, patterns)
+
+                command = self.command_queue.get_nowait()
+                self.process_command(command)
             except DisconnectedException:
                 self.logger.info('Disconnected from server. Reconnecting.')
                 self.conn.close()
                 self.connect_and_join_channels(self.channels)
                 continue
-
-            if data:
-                self.conn.dispatch_data(data, patterns)
-
-            try:
-                command = self.command_queue.get_nowait()
-                self.process_command(command)
             except Queue.Empty:
                 continue
 
