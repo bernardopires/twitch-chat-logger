@@ -13,6 +13,7 @@ class TwitchBot(IRCBot, threading.Thread):
     disconnected. Communication happens over the queue command_queue. The
     accepted commands through the queue are 'join' and 'part'.
     """
+    MESSAGES_TO_IGNORE = ['/join', '/part']
 
     def __init__(self, name, conn, chat_logger, command_queue, log_filename=None, *args, **kwargs):
         super(TwitchBot, self).__init__(conn, *args, **kwargs)
@@ -90,6 +91,8 @@ class TwitchBot(IRCBot, threading.Thread):
     def log(self, sender, message, channel):
         if sender == settings.IRC['NICK']:
             self.logger.info("%s, %s: %s " % (channel, sender, message))
+            return
+        if message in self.MESSAGES_TO_IGNORE:
             return
 
         self.chat_logger.log_chat(sender, message, channel)
