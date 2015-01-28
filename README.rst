@@ -10,8 +10,8 @@ to be logged (e.g. logging a 100 channels will result in 5 bots being created).
 The list of most popular channels is updated every 60 seconds and the bots
 join and leave channels as needed.
 
-Logging 100 channels for 24 hours seems to amount to ~2 million chat lines
-(~200 MB).
+Logging 100 channels for 24 hours seems to amount to ~4 million chat lines
+(~400 MB).
 
 Setup
 -----
