@@ -98,6 +98,12 @@ ALTER TABLE ONLY stream_log ALTER COLUMN id SET DEFAULT nextval('stream_log_id_s
 ALTER TABLE ONLY chat_log
     ADD CONSTRAINT chat_log_pkey PRIMARY KEY (id);
 
+--
+-- Name: stream_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY stream_log
+    ADD CONSTRAINT stream_log_pkey PRIMARY KEY (id);
 
 --
 -- PostgreSQL database dump complete
