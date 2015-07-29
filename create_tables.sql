@@ -104,6 +104,9 @@ ALTER TABLE ONLY chat_log
 
 ALTER TABLE ONLY stream_log
     ADD CONSTRAINT stream_log_pkey PRIMARY KEY (id);
+    
+CREATE INDEX chat_log_date_idx ON chat_log (date);
+CREATE INDEX chat_log_channel_idx ON chat_log (channel);
 
 --
 -- PostgreSQL database dump complete
