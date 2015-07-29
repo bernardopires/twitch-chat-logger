@@ -1,17 +1,17 @@
+import argparse
 import sys
 from manager import TwitchManager
-from optparse import OptionParser
 
 
 def main():
-    parser = OptionParser()
-    parser.add_option("-n", "--streams-to-log", dest="streams_to_log", type="int",
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--streams-to-log", dest="streams_to_log", type=int,
                       help="the number of streams to log", default=100)
-    parser.add_option("-f", "--log-filename", dest="log_filename",
+    parser.add_argument("-f", "--log-filename", dest="log_filename",
                       help="the filename to log to", default=None)
-    (options, args) = parser.parse_args()
+    args = parser.parse_args()
 
-    manager = TwitchManager(streams_to_log=options.streams_to_log, log_filename=options.log_filename)
+    manager = TwitchManager(streams_to_log=args.streams_to_log, log_filename=args.log_filename)
     try:
         manager.run_log_loop()
     except KeyboardInterrupt:
