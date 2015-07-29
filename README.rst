@@ -3,12 +3,12 @@ twitch-chat-logger
 
 A simple python app for logging twitch's chat to a PostgreSQL database. It
 logs an arbitrary ammount of channels (default is a 100) ordered by the
-numbers of viewers. Twitch seems to not like a single bot joining a large
-amount of channels, so each bot is limitted to 20 channels. This app
-automatically scales the number of bots according to how many channels are
-to be logged (e.g. logging a 100 channels will result in 5 bots being created).
-The list of most popular channels is updated every 60 seconds and the bots
-join and leave channels as needed.
+numbers of viewers or an specific list of channels. Twitch seems to not like
+a single bot joining a large amount of channels, so each bot is limitted to
+20 channels. This app automatically scales the number of bots according to how
+many channels are to be logged (e.g. logging a 100 channels will result in
+5 bots being created). The list of most popular channels is updated every 60
+seconds and the bots join and leave channels as needed.
 
 Logging 100 channels for 24 hours seems to amount to ~4 million chat lines
 (~400 MB).
@@ -76,7 +76,8 @@ you may have to execute ``apt-get install libpq-dev python-dev``.
     python main.py
 
 The command above will start 5 bots logging the 100 most popular twitch
-channels. To log a different amount use the parameter ``n`` and to save the
+channels. To log a different amount use the parameter ``n``, to log a
+specific list of channels use the parameter ``c`` and to save the
 output to a file use the parameter ``f``. For example, use the command below
 to log the 50 most popular channels with the output being saved to a file
 named ``log.txt``
@@ -84,6 +85,12 @@ named ``log.txt``
 ::
 
     python main.py -n 50 -f log.txt
+
+To log a specific list of channels, separate the channels name by whitespace.
+
+::
+
+    python main.py -c channel1 channel2 channel3
 
 .. _Twitch Chat OAuth Password Generator: http://twitchapps.com/tmi/
 .. _docker: https://www.docker.com/
