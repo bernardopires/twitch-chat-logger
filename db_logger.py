@@ -20,6 +20,9 @@ class DatabaseLogger:
         if len(message) > 512:
             message = message[:512]
 
+        if self.cursor.closed:
+            return
+
         try:
             self.cursor.execute("INSERT INTO chat_log (sender, message, channel, date) VALUES (%s, %s, %s, %s)",
                                 (sender, message, channel, current_time_in_milli()))
@@ -34,6 +37,9 @@ class DatabaseLogger:
             stream['channel']['status'] = stream['channel']['status'][:128]
         if 'game' not in stream['channel']:
             stream['channel']['game'] = None
+
+        if self.cursor.closed:
+            return
 
         self.cursor.execute("INSERT INTO stream_log (channel, title, game, viewers, date) "
                             "VALUES (%s, %s, %s, %s, %s)",
