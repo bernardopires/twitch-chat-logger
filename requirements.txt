@@ -1,6 +1,6 @@
 argparse==1.2.1
 configparser==3.5.0b2
 -e git://github.com/bernardopires/irc.git#egg=irckit-dev
-psycopg2==2.5.4
+psycopg2==2.6.2
 requests==2.5.1
 wsgiref==0.1.2
