@@ -9,9 +9,9 @@ IRC = {
 # If you're using a local database the host is 'localhost'
 DATABASE = {
     'NAME': 'twitch',
-    'USER': 'USER',
-    'PASSWORD': 'PASSWORD',
-    'HOST': 'host',
+    'USER': 'postgres',
+    'PASSWORD': 'root',
+    'HOST': 'db',
 }
 
 API = {
