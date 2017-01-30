@@ -1,5 +1,5 @@
 IRC = {
-    'SERVER': 'irc.twitch.tv',
+    'SERVER': 'irc.chat.twitch.tv',
     'NICK': 'USERNAME',
     'PASSWORD': 'PASSWORD',
     'PORT': 6667,
