@@ -1,7 +1,7 @@
 IRC = {
     'SERVER': 'irc.chat.twitch.tv',
     'NICK': 'USERNAME',
-    'PASSWORD': 'PASSWORD',
+    'PASSWORD': 'oauth:YOUR_KEY_HERE',
     'PORT': 6667,
 }
 
@@ -15,5 +15,5 @@ DATABASE = {
 }
 
 API = {
-	'CLIENTID': YOUR_CLIENT_ID
+	'CLIENTID': 'YOUR_CLIENT_ID'
 }
