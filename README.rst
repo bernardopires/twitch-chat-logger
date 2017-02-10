@@ -37,6 +37,15 @@ your account credentials. Hint: You can get your oauth password from the
         'PORT': 6667,
     }
 
+
+The project makes requests to pull the most popular channels from the Twitch API. To do this you need to get your ``Client-Id`` which you can get going to Twitch > Account Settings > Conections` and register a new aplication (at the bottom of the page). Then add it to the settings file in the API dictionary.
+
+::
+
+    API = {
+        'CLIENTID': 'YOUR ID GOES HERE'
+    }
+
 If you're using `docker`_ and `fig`_ you're all set.
 
 ::

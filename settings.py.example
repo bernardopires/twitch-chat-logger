@@ -1,11 +1,12 @@
 IRC = {
-    'SERVER': 'irc.twitch.tv',
-    'NICK': 'twitch_username',
-    'PASSWORD': 'your_oauth_password',  # tip: http://twitchapps.com/tmi/
+    'SERVER': 'irc.chat.twitch.tv',
+    'NICK': 'USERNAME',
+    'PASSWORD': 'oauth:YOUR_KEY_HERE',
     'PORT': 6667,
 }
 
 # Do not change if using docker!
+# If you're using a local database the host is 'localhost'
 DATABASE = {
     'NAME': 'twitch',
     'USER': 'postgres',
@@ -13,3 +14,6 @@ DATABASE = {
     'HOST': 'db',
 }
 
+API = {
+	'CLIENTID': 'YOUR_CLIENT_ID'
+}
